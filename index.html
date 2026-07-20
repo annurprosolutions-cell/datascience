@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semakan Jawapan — Data Foundation &amp; Data Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#123330;
+    --canvas-2:#0e2a27;
+    --paper:#fbf7ed;
+    --paper-2:#f3edda;
+    --ink:#1b2624;
+    --ink-soft:#5b6d68;
+    --ink-faint:#8a978f;
+    --teal:#1c7a70;
+    --teal-dark:#125650;
+    --red-pen:#b23b2e;
+    --red-pen-bg:#f7e4df;
+    --green-pen:#2f7d4f;
+    --green-pen-bg:#e3f1e6;
+    --gold:#c99a3e;
+    --line:#e4dcc5;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --radius-sm:9px;
+    --shadow-card:0 18px 40px -18px rgba(6,20,18,.45);
+    --shadow-soft:0 8px 22px -12px rgba(6,20,18,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 12% 8%, #17433f 0%, transparent 45%),
+      radial-gradient(circle at 88% 92%, #0f2f2b 0%, transparent 40%),
+      var(--canvas);
+    min-height:100vh;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Space Grotesk',system-ui,sans-serif;}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+  #app{
+    max-width:760px;
+    margin:0 auto;
+    padding:32px 18px 64px;
+    min-height:100vh;
+  }
+  a,button{font-family:inherit;}
+  button{cursor:pointer;border:none;background:none;font-size:inherit;color:inherit;}
+  ::selection{background:var(--gold);color:var(--ink);}
+
+  /* ---------- top brand ---------- */
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:26px;
+    color:#eef4f2;
+  }
+  .brand .stamp-mini{
+    width:44px;height:44px;border-radius:50%;
+    border:2px solid rgba(238,244,242,.55);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk';font-weight:700;font-size:.8rem;
+    letter-spacing:.02em;
+    transform:rotate(-8deg);
+    flex-shrink:0;
+  }
+  .brand-text .eyebrow{
+    font-family:'JetBrains Mono';font-size:.68rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 2px;
+  }
+  .brand-text h1{font-size:1.32rem;margin:0;color:#fff;font-weight:700;line-height:1.15;}
+
+  /* ---------- home screen ---------- */
+  .home-intro{
+    color:#dce9e5;
+    font-size:.98rem;
+    line-height:1.6;
+    max-width:56ch;
+    margin:0 0 28px;
+  }
+  .set-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:560px){ .set-grid{grid-template-columns:1fr;} }
+
+  .set-card{
+    position:relative;
+    background:var(--paper);
+    border-radius:var(--radius-lg);
+    padding:22px 20px 20px;
+    box-shadow:var(--shadow-card);
+    border:1px solid rgba(0,0,0,.03);
+    text-align:left;
+    transition:transform .18s ease, box-shadow .18s ease;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .set-card::before{
+    content:"";
+    position:absolute; top:0; left:22px; right:22px; height:10px;
+    background:repeating-linear-gradient(90deg, transparent 0 8px, rgba(0,0,0,.06) 8px 9px);
+    opacity:.6;
+  }
+  .set-card:hover{ transform:translateY(-3px); box-shadow:0 24px 46px -16px rgba(6,20,18,.5); }
+  .set-card .cat{
+    font-family:'JetBrains Mono'; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--teal-dark); font-weight:700;
+  }
+  .set-card h3{ margin:0; font-size:1.28rem; color:var(--ink); }
+  .set-card .count{ font-size:.85rem; color:var(--ink-soft); }
+  .set-card .go-btn{
+    margin-top:8px;
+    align-self:flex-start;
+    background:var(--teal);
+    color:#fff;
+    padding:9px 16px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:.88rem;
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s ease, transform .12s ease;
+  }
+  .set-card .go-btn:hover{ background:var(--teal-dark); transform:translateX(2px); }
+  .set-card.foundation .cat{color:#8a5a1f;}
+  .set-card.foundation .go-btn{background:#a9772c;}
+  .set-card.foundation .go-btn:hover{background:#8a5f22;}
+
+  /* ---------- quiz top bar ---------- */
+  .quiz-top{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .back-link{
+    color:#dce9e5; font-size:.85rem; display:flex; align-items:center; gap:5px;
+    opacity:.85; flex-shrink:0;
+  }
+  .back-link:hover{opacity:1;}
+  .progress-wrap{ flex:1; }
+  .progress-label{
+    display:flex; justify-content:space-between; color:#dce9e5; font-size:.78rem;
+    font-family:'JetBrains Mono'; margin-bottom:5px; letter-spacing:.02em;
+  }
+  .progress-track{
+    height:8px; border-radius:999px; background:rgba(255,255,255,.14); overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; background:linear-gradient(90deg,var(--gold),#e4bd6e); border-radius:999px;
+    transition:width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .score-badge{
+    font-family:'JetBrains Mono'; font-weight:700; font-size:.82rem;
+    background:rgba(255,255,255,.12); color:#fff; padding:7px 12px; border-radius:10px;
+    flex-shrink:0; border:1px solid rgba(255,255,255,.18);
+  }
+
+  /* ---------- question card ---------- */
+  .q-card{
+    background:var(--paper);
+    border-radius:var(--radius-lg);
+    padding:26px 24px 22px;
+    box-shadow:var(--shadow-card);
+    animation:cardIn .32s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes cardIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .q-text{
+    font-size:1.18rem; line-height:1.5; font-weight:600; color:var(--ink); margin:0 0 20px;
+  }
+  .q-text br{content:""; display:block; margin:4px 0;}
+
+  .q-table-wrap{overflow-x:auto; margin:12px 0 4px; border-radius:10px; border:1px solid var(--line);}
+  table.q-table{ border-collapse:collapse; width:100%; font-size:.78rem; font-family:'JetBrains Mono';}
+  table.q-table th, table.q-table td{ padding:6px 9px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap;}
+  table.q-table th{ background:var(--paper-2); font-weight:700; }
+  table.q-table tr:last-child td{border-bottom:none;}
+
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    display:flex; align-items:center; gap:13px;
+    background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-md);
+    padding:13px 15px; text-align:left; font-size:1rem; color:var(--ink);
+    transition:border-color .12s ease, background .12s ease, transform .1s ease;
+    width:100%;
+  }
+  .opt:hover:not(.locked){ border-color:var(--teal); background:#f4faf9; }
+  .opt .letter{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--paper-2); border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono'; font-weight:700; font-size:.85rem; color:var(--ink-soft);
+    flex-shrink:0; transition:all .15s ease;
+  }
+  .opt .otext{flex:1;}
+  .opt.correct{ border-color:var(--green-pen); background:var(--green-pen-bg); }
+  .opt.correct .letter{ background:var(--green-pen); color:#fff; border-color:var(--green-pen); }
+  .opt.wrong{ border-color:var(--red-pen); background:var(--red-pen-bg); }
+  .opt.wrong .letter{ background:var(--red-pen); color:#fff; border-color:var(--red-pen); }
+  .opt.dim{ opacity:.55; }
+  .opt.locked{ cursor:default; }
+  .mark-icon{ margin-left:auto; font-weight:700; font-size:1.05rem; flex-shrink:0; }
+  .opt.correct .mark-icon{ color:var(--green-pen); }
+  .opt.wrong .mark-icon{ color:var(--red-pen); }
+
+  .stamp-pop{ animation:stampIn .28s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes stampIn{ 0%{transform:scale(1.18) rotate(-3deg); opacity:.5;} 100%{transform:scale(1) rotate(0); opacity:1;} }
+
+  .feedback-banner{
+    margin-top:16px; padding:10px 14px; border-radius:10px; font-weight:700; font-size:.92rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .feedback-banner.good{ background:var(--green-pen-bg); color:var(--green-pen); }
+  .feedback-banner.bad{ background:var(--red-pen-bg); color:var(--red-pen); }
+
+  .note{
+    margin-top:14px; padding:14px 16px; border-radius:var(--radius-md);
+    background:var(--paper-2); border:1.5px dashed var(--line);
+    font-size:.93rem; line-height:1.55; color:#3a423f;
+    transform:rotate(-.35deg);
+    animation:noteIn .3s ease;
+  }
+  @keyframes noteIn{ from{opacity:0; transform:translateY(6px) rotate(-.35deg);} to{opacity:1; transform:translateY(0) rotate(-.35deg);} }
+  .note .note-label{
+    font-family:'JetBrains Mono'; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--teal-dark); font-weight:700; display:block; margin-bottom:5px;
+  }
+
+  .next-row{ display:flex; justify-content:flex-end; margin-top:20px; }
+  .next-btn{
+    background:var(--ink); color:#fbf7ed; padding:12px 22px; border-radius:12px;
+    font-weight:600; font-size:.96rem; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .12s ease, background .12s ease;
+    animation:cardIn .25s ease;
+  }
+  .next-btn:hover{ background:var(--teal-dark); transform:translateX(2px); }
+
+  /* ---------- results ---------- */
+  .result-wrap{ text-align:center; padding-top:10px; }
+  .stamp-big{
+    width:172px; height:172px; border-radius:50%; margin:0 auto 22px;
+    background:var(--paper);
+    border:5px double var(--stampcolor, var(--teal));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transform:rotate(-6deg);
+    box-shadow:var(--shadow-card);
+    animation:stampBig .45s cubic-bezier(.2,1.4,.5,1);
+  }
+  @keyframes stampBig{ 0%{transform:scale(.5) rotate(-6deg); opacity:0;} 100%{transform:scale(1) rotate(-6deg); opacity:1;} }
+  .stamp-big .score-num{ font-family:'JetBrains Mono'; font-weight:700; font-size:2.1rem; color:var(--stampcolor,var(--teal)); line-height:1; }
+  .stamp-big .score-den{ font-family:'JetBrains Mono'; font-size:.95rem; color:var(--ink-soft); margin-top:2px;}
+  .stamp-big .score-pct{ font-family:'Space Grotesk'; font-weight:700; font-size:.82rem; color:var(--stampcolor,var(--teal)); margin-top:4px; letter-spacing:.03em;}
+
+  .result-msg{ color:#fff; font-size:1.3rem; font-weight:700; margin:0 0 8px; }
+  .result-sub{ color:#dce9e5; font-size:.95rem; margin:0 0 26px; }
+  .result-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:30px; }
+  .btn-solid{ background:var(--gold); color:#2a2011; padding:12px 20px; border-radius:12px; font-weight:700; font-size:.94rem; transition:transform .12s ease;}
+  .btn-solid:hover{ transform:translateY(-2px); }
+  .btn-ghost{ background:rgba(255,255,255,.1); color:#fff; padding:12px 20px; border-radius:12px; font-weight:600; font-size:.94rem; border:1.5px solid rgba(255,255,255,.3); transition:background .12s ease;}
+  .btn-ghost:hover{ background:rgba(255,255,255,.2); }
+
+  .review-toggle{
+    color:#dce9e5; font-size:.86rem; text-decoration:underline; text-underline-offset:3px;
+    margin-bottom:14px; display:inline-block;
+  }
+  .review-list{ text-align:left; display:flex; flex-direction:column; gap:12px; }
+  .review-item{
+    background:var(--paper); border-radius:var(--radius-md); padding:16px 18px;
+    box-shadow:var(--shadow-soft);
+  }
+  .review-item .rq{ font-weight:600; font-size:.95rem; margin:0 0 8px; }
+  .review-item .ra{ font-size:.85rem; margin:0 0 6px; }
+  .review-item .ra.you{ color:var(--red-pen); }
+  .review-item .ra.correct{ color:var(--green-pen); }
+  .review-item .re{ font-size:.85rem; color:var(--ink-soft); border-top:1px dashed var(--line); padding-top:8px; margin-top:8px; }
+
+  .footnote{
+    color:#9db3ae; font-size:.72rem; text-align:center; margin-top:36px; line-height:1.6;
+  }
+  .kbd-hint{ display:none; }
+  @media (min-width:640px){
+    .kbd-hint{ display:inline; font-family:'JetBrains Mono'; font-size:.7rem; color:var(--ink-faint); margin-left:8px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   DATA — 4 sets, extracted from the uploaded exam review PDF.
+   Shorthand keys: q = question (HTML allowed), o = 4 options,
+   c = index (0-3) of correct option, e = explanation.
+   ========================================================= */
+
+const foundationA = [
+{q:"Which of the following best describes <b>Data Science</b>?",o:["The process of designing computer hardware systems","The practice of collecting, analyzing, and interpreting data to gain insights and support decision-making","The study of software programming languages only","The storage of large amounts of raw data without analysis"],c:1,e:"Data Science tu core-nya pasal collect, analyze, dan interpret data untuk dapat insight dan support decision-making — bukan sekadar hardware atau storage je."},
+{q:"Identify the missing words: 'Probability theory is the branch of ___.'",o:["Statistics","Mathematics","Game and Gambling","Physics"],c:1,e:"Probability theory sebenarnya cabang Mathematics, walaupun ia banyak digunakan dalam Statistics."},
+{q:"What are three of the five dysfunctions of a team?",o:["Inattention to result, Lack of creativity, Absence of trust","Lack of ambition, Avoidance of accountability, Lack of commitment","Lack of commitment, Fear of conflict, Lack of creativity","Lack of commitment, Absence of trust, Inattention to results"],c:3,e:"Ikut model Lencioni, lima dysfunctions tu: Absence of Trust, Fear of Conflict, Lack of Commitment, Avoidance of Accountability, Inattention to Results. Option D je yang ketiga-tiga item betul dari list ni. (Nota: bahagian 'correct answer' kat PDF sumber ter-cut off, so jawapan ni based on model asal — worth cross-check.)"},
+{q:"In a fair coin, the probability of a tossed coin landing heads or tails is 0.5.<br>What is the probability of either head or tail (assuming that these events are mutually exclusive)?",o:["0.5","0.25","0.1","1"],c:3,e:"Head atau tail tu mutually exclusive dan cover SEMUA possible outcome, so P(head OR tail) = P(head) + P(tail) = 0.5 + 0.5 = 1."},
+{q:"To which of the following organizations does the European Union General Data Protection Regulation (GDPR) <b>NOT</b> apply?",o:["Any European organization that processes data of American data subjects","Any American organization that processes data of American data subjects","Any American organization that processes data of EU data subjects","Any European organization that processes data of EU data subjects"],c:1,e:"GDPR fokus pada data subject yang berada di EU. Kalau organization DAN data subject dua-dua US-based, takde EU connection langsung — so GDPR tak apply."},
+{q:"In what decade did ETL become a popular concept?",o:["1960s","1970s","1980s","1990s"],c:3,e:"ETL jadi popular concept dalam 1990-an, sejajar dengan perkembangan data warehousing masa tu."},
+{q:"What is the main purpose of <b>data visualization</b> in Data Science?",o:["To increase data storage capacity","To hide sensitive information in datasets","To present data in a graphical format that makes patterns and insights easier to understand","To replace statistical analysis"],c:2,e:"Tujuan utama data viz adalah present data secara graphical supaya pattern dan insight senang nampak — bukan gantikan statistical analysis."},
+{q:"Which of the following examples refers to <b>Veracity</b>?",o:["All credit card transactions on a day within Europe","Audio, video and text files that are generated at various locations in an organization","The quality and trustworthiness of data from a medical experiment","The usefulness of web-clicks info to improve your webshop and optimize profit"],c:2,e:"Veracity (salah satu 5 V's) pasal quality & trustworthiness data — macam data dari medical experiment yang kena betul-betul tepat."},
+{q:"What are three Artificial Intelligence challenge fields?",o:["Machine Learning, Robotics & Automation, Knowledge Capture","Computer Vision, Planning and Optimization, Robotics & Automation","Machine Learning, Natural Language Recognition, Computer Vision","Natural Language Processing, Computer Vision, Robotics & Motion"],c:3,e:"Tiga challenge field utama AI: Natural Language Processing, Computer Vision, dan Robotics & Motion."},
+{q:"Identify the missing words: 'For content management and indexing, a ___ would be the preferred NoSQL database type.'",o:["Document Store","Graph Database","Wide Column Store","Key/Value store"],c:0,e:"Document Store (contoh: MongoDB) sesuai untuk content management sebab simpan data dalam format flexible macam JSON, senang nak index."},
+{q:"Identify the missing words: 'Machine learning ___ Artificial Intelligence.'",o:["is independent from","is a subset of","contains as subset","is the same as"],c:1,e:"Machine Learning adalah subset (sebahagian kecil) daripada Artificial Intelligence, bukan sebaliknya."},
+{q:"Which TWO of the following statements BEST explain the importance of clear business objectives?<br><br>I. Without clear objectives, you are not able to close a project properly.<br>II. During the evaluation phase, you need business success criteria to evaluate your results.<br>III. If you define the business objective clearly, the client can not change the objective during the project.<br>IV. Business objectives are essential to determine the financial ROI of a data analysis.",o:["II & IV","II & III","I & II","I & III"],c:0,e:"Business objectives penting untuk (II) evaluate hasil guna success criteria, dan (IV) tentukan financial ROI — bukan untuk 'lock' objective supaya client tak boleh ubah langsung."},
+{q:"Which is TWO of the following statements BEST describe the purpose of python and R languages for Data Science?<br><br>I. R is mainly used for statistical analysis<br>II. Python provides a more general approach to data science<br>III. R is a general purpose language with a readable syntax<br>IV. Python was built by statisticians and encompasses their specific language",o:["I & II","II & III","III & IV","I & IV"],c:0,e:"R memang kuat untuk statistical analysis, manakala Python bagi general-purpose approach yang lebih luas untuk data science."},
+{q:"What are three types of output of visualisation?",o:["Strategic Dashboards, Matplotlib, PowerPoint","Strategic Dashboards, Operational Reports, Embedded Visualisations","Operational Reports, PowerPoint, MP4","Embedded Visualisations, Streamlit, Dash"],c:1,e:"Tiga jenis output visualization: Strategic Dashboards, Operational Reports, dan Embedded Visualisations — bukan nama tools macam Matplotlib/PowerPoint/Streamlit."},
+{q:"What does Business Intelligence turn data into?",o:["Visualisations","Statistics","Business insights","PowerPoint presentations"],c:2,e:"Business Intelligence proses data untuk hasilkan business insights yang boleh guide decision-making."},
+{q:"Which of the following is <b>TRUE</b> about train and test data?",o:["A portion of the whole dataset should be kept apart (test dataset) in the training process","The test data set size should be 80% of the whole data set, whereas the train data set should be 20%","Labels of the test set should not be known as they won't be part of the train process","Hyperparameter tuning should be carried out using only the test data set and not the train dataset"],c:0,e:"Standard practice: kena sisihkan sebahagian dataset jadi test set yang tak disentuh masa training, supaya evaluation model jadi fair."},
+{q:"What are three of the four types of data analytics?",o:["Prescriptive, Diagnostic, Descriptive","Descriptive, Predictive, Reactive","Theoretical, Predictive, Diagnostic","Descriptive, Prescriptive, Prejudiced"],c:0,e:"Empat jenis data analytics: Descriptive, Diagnostic, Predictive, Prescriptive. 'Reactive' dan 'Theoretical' bukan kategori standard."},
+{q:"Identify the missing words: 'A set of ___ associated with a random experiment is an ___.'",o:["events, item","items, event","items, sample space","sample spaces, item"],c:2,e:"Set kesemua possible outcome (items) dari satu random experiment dipanggil sample space."},
+{q:"Which of the following is <b>NOT</b> a phase of the stages in the Data Science Lifecycle?",o:["Data preparation","Build model","Measure effectiveness","Anomaly detection"],c:3,e:"Anomaly detection tu satu teknik/method, bukan phase dalam Data Science Lifecycle — phase biasa termasuk Data Preparation, Build Model, Measure Effectiveness, Communicate Results. (Nota: 'correct answer' dalam PDF sumber ter-cut off — jawapan ni based on process of elimination.)"},
+{q:"Why dealing with a large and growing variety of data structures is problematic for traditional databases?",o:["The fixed schema prevents loading and storing of an unknown data structure","It can't handle data structures, but only data schemas","Connecting to a traditional database is hard because of security constraints","Because of the differences in language and date/number formatting"],c:0,e:"Traditional database guna fixed schema, so dia tak boleh handle data structure yang unpredictable/berubah-ubah."},
+{q:"Which of the following is an example of <b>structured data</b>?",o:["Images captured from CCTV cameras","Audio recordings from customer service calls","Data stored in rows and columns in a relational database","Social media posts and comments"],c:2,e:"Data dalam rows & columns (relational database) adalah contoh classic structured data — yang lain tu unstructured/semi-structured."},
+{q:"Linear regression attempts to model the relationship between two variables by fitting a linear equation to observed data. The general equation is of the form Y = a + bX and are use several (X, Y) pairs, like (3, 5), to obtain a final equation of the form Y = 2 + 1*X.<br><br>Which of the following terms define best the general equation (Y = a + bX)?",o:["Algorithm","Training data","Model","Mathematical Logarithm"],c:2,e:"Bentuk umum Y = a + bX (sebelum nilai a,b spesifik ditentukan) tu dipanggil 'model' — struktur matematik yang representkan relationship antara variables. (Nota: 'correct answer' dalam PDF sumber ter-cut off — jawapan ni based on standard terminology, worth cross-check.)"},
+{q:"Which of the following is <b>TRUE</b> about supervised learning in Machine Learning?",o:["It is carried out without pre-existing labels","A typical example is anomaly detection","Two subcategories are classification and regression","Linear regression is not an example"],c:2,e:"Supervised learning ada dua subcategory utama: classification dan regression."},
+{q:"Which of the 4 are used for Data Manipulation?<br><br>Consider the following list:<br>I. Tidyverse<br>II. Pandas<br>III. Scikit-learn<br>IV. Scipy",o:["I & II","I & III","II & III","III & IV"],c:0,e:"Tidyverse (R) dan Pandas (Python) adalah library untuk data manipulation. Scikit-learn dan Scipy lebih fokus kat machine learning/scientific computing."},
+{q:"For what type of data is it clear that it is Personally Identifiable Information (PII)?",o:["Favorite Hotel","Hobbies","Home Address","Education Institute"],c:2,e:"Home address terus boleh identify seseorang secara spesifik, so ia clearly PII. Hobbies/favorite hotel lagi general dan tak semestinya identify individu."},
+{q:"Which of the following is <b>NOT</b> an application of Computer Vision?",o:["Facial Recognition","Augmented Reality","Conversational User Interface","Self-Driving Cars"],c:2,e:"Conversational User Interface (chatbot) adalah application Natural Language Processing, bukan Computer Vision."},
+{q:"Which of the types of data analytics answer 'what is likely to happen in the future'?<br><br>I. Diagnostic<br>II. Predictive<br>III. Prescriptive",o:["I & II","II & III","II","III"],c:2,e:"Predictive analytics jawab soalan 'apa yang berkemungkinan jadi pada masa depan' — beza dengan diagnostic (kenapa dah jadi) dan prescriptive (apa patut buat pasal tu)."},
+{q:"Which branch of mathematics would you use to answer the following question?<br><br>'If you toss a coin 10 times and you get 10 heads, is the coin fair?'",o:["Statistics","Geometry","Algebra","Probability"],c:0,e:"Nak test sama ada coin tu fair based on observed data (10 heads dari 10 lambungan) adalah soalan statistical inference — bukan probability semata-mata."},
+{q:"Which main phase of Data Analytics comes before Data Understanding in the CRISP-DM model?",o:["Business Understanding","Setting up your environment","Modeling","Collect Initial Data"],c:0,e:"Business Understanding adalah phase pertama dalam CRISP-DM, sebelum Data Understanding."},
+{q:"Regarding data types in statistics, identify the missing words in the following sentence:<br><br>'___ data is represented by some qualitative rather than by a numerical measurement, for example, binary data (1 or 0) or unordered categories (Blood type: A, B, AB and O).'",o:["Nominal or categorical","Ordinal","Continuous","Text"],c:0,e:"Data qualitative macam blood type (bukan numerical measurement) dipanggil nominal atau categorical."},
+{q:"Identify the missing words: 'Data refers to facts and ___ that are collected through observation.'",o:["statistics","wisdom","excel files","images"],c:0,e:"Data = facts dan statistics yang dikumpul melalui observation."},
+{q:"Which of the following is normally <b>NOT</b> a component of a machine learning pipeline?",o:["Data","Computations","Component","User Interface"],c:3,e:"User Interface bukan komponen teras ML pipeline — pipeline fokus pada data, computation, dan model/component, bukan macam mana user interact dengan sistem."},
+{q:"What was the main driver for the creation of Big Data technologies in the early 2000s?",o:["Big technology companies desiring a single brand name for their traditional data solutions","The fast-growing usage of web, social and mobile technology","The increase in average screen size of smartphones and notebook computer","The Intel Pentium 3 computer chip and its ability to use bigger memory modules"],c:1,e:"Pertumbuhan pesat penggunaan web, social media, dan mobile technology yang generate data dalam volume besar jadi pendorong utama Big Data technologies."},
+{q:"Identify the missing words: 'Data analytics improves business performance most typically in terms of ___.'",o:["efficiency","management style","privacy","sustainability"],c:0,e:"Data analytics paling kerap tingkatkan business performance dari segi efficiency — proses jadi lebih optimal, kurang wastage."},
+{q:"Which of the following is <b>NOT</b> an RDBMS?",o:["SAP","Microsoft Access","Oracle","MySQL"],c:0,e:"SAP adalah ERP system (guna database di belakang), bukan RDBMS itu sendiri. MySQL, Oracle, MS Access semuanya RDBMS."},
+{q:"Which of the following is <b>NOT</b> the responsibility of a Data Scientist when dealing with clients in a project?",o:["Informing the client on potential risks relying on the Data Science results","Present business conclusions derived from the Data Science results","Consult with the client on possible ethical concerns","Questioning data quality before using it in your work"],c:3,e:"Soalan ni pasal responsibility 'bila deal dengan CLIENT'. Inform risk, present conclusion, dan consult ethical concern semua involve interaction terus dengan client. Questioning data quality tu proses teknikal dalaman yang data scientist buat sendiri, bukan aktiviti client-facing."},
+{q:"Identify the missing words: 'In the world of Big Data, data visualization tools and technologies are essential to analyze massive amounts of information and ___.'",o:["create attractive visuals","make data-driven decisions","make sure Big Data thrives","justify a large budget"],c:1,e:"Tujuan sebenar viz tools dalam Big Data adalah untuk buat data-driven decisions, bukan just 'cantikkan' visual."},
+{q:"Why does Big Data technology scale better than traditional data technology?",o:["It has faster algorithms for sorting data","It uses faster memory modules","It uses a distributed architecture","It can store data regardless of data structure"],c:2,e:"Big Data technology guna distributed architecture (spread across banyak machine/node) untuk scale — beza dengan traditional tech yang biasanya scale-up satu machine je."},
+{q:"What are the four typical advantages Big Data offers?",o:["Scalability, Transparency, Privacy, Coping with uncertainty","Scalability, Flexibility, Limitless, Coping with uncertainty","Auditability, Flexibility, Cost Control, Coping with uncertainty","Cost control, Transparency, Limitless, Privacy"],c:1,e:"Empat advantage Big Data: Scalability, Flexibility, Limitless, dan Coping with uncertainty."},
+{q:"In an existing relational database containing an article information table, what database element would need to be added if we want to store order information for those articles?",o:["Table","Field","Columns","Row"],c:0,e:"Bila nak simpan data baru (order info) yang related tapi berbeza entity dari article, kena tambah TABLE baru (dengan relationship) — bukan sekadar tambah field/column dalam table sedia ada."}
+];
+
+const foundationB = [
+{q:"In a normal distribution, what will happen if the standard deviation is increased keeping constant the mean?",o:["The probability density function will be wider","The maximum point of the probability density function will have a different location","The probability mass function will be wider","The maximum point of the probability mass function will have a different location"],c:0,e:"Bila standard deviation naik (mean kekal sama), probability density function jadi lagi 'melebar/flat' — data tersebar lebih jauh dari mean."},
+{q:"Identify the missing words: '___ is concerned with building models that separate data into distinct classes.'",o:["Regression","Inference","Classification","Reinforcement Learning"],c:2,e:"Classification adalah proses bina model yang bahagikan data kepada kelas/kategori berlainan."},
+{q:"Search engines using json files for storage and index MOST LIKELY are using a:",o:["Graph Database","Key/Value Store","Document Store","Wide Column Store"],c:2,e:"JSON secara semula jadi flexible/schema-less, so search engine yang guna JSON files biasanya berdasarkan Document Store (macam MongoDB, Elasticsearch)."},
+{q:"Which of the following sentences in the world of Big Data regarding data visualization tools and technologies is <b>TRUE</b>?",o:["These tools and technologies are essential to analyze massive amounts of information and create attractive visuals","These tools and technologies are essential to analyze massive amounts of information and make data-driven decisions","These tools and technologies are essential to analyze massive amounts of information and make sure Big Data thrives","These tools and technologies are essential to analyze massive amounts of information and justify a large budget"],c:1,e:"Sekali lagi — tujuan sebenar viz tools dalam Big Data adalah buat data-driven decisions, bukan just 'cantikkan' visual."},
+{q:"Which of the following is <b>NOT</b> the main goal of business intelligence?",o:["Harness power of data","Help make more informed decisions","Guide the business","Data security"],c:3,e:"Data security bukan main goal BI — BI fokus harness data untuk decision-making dan guide business. Security tu concern berasingan (biasanya bawah IT/data governance)."},
+{q:"Which of the following typically does <b>NOT</b> benefit from Data analytics?",o:["Cost reduction","Customer satisfaction","New services","Privacy"],c:3,e:"Privacy sebenarnya satu concern/constraint, bukan benefit yang datang dari data analytics. Cost reduction, customer satisfaction, dan new services adalah benefit biasa."},
+{q:"Which of the following is an output of a machine learning program?",o:["Data samples","Set of logical rules","Features or variables","Computational unit"],c:1,e:"Output ML program biasanya set logical rules/parameters (model) — data samples/features tu input, bukan output."},
+{q:"Why the test dataset should <b>NOT</b> be used in the training process of a machine learning model?",o:["The test dataset has a different format than the train data set, in consequence, it is incompatible with the training process","The test dataset offers a more reliable benchmark for evaluation purposes than the train dataset","The size of the test data set is not suitable for the training process as it is several orders of magnitude bigger than the train dataset","There is no specific reason to use the test set in the training process and it can be used without any measurable effect"],c:1,e:"Test dataset kena kekal 'unseen' supaya ia boleh bagi benchmark yang lebih reliable/objektif untuk evaluate model — kalau guna dalam training, evaluation jadi biased."},
+{q:"What is <b>NOT</b> a main goal of Visualization?",o:["Information","Exploration","Explanation","Standardization"],c:3,e:"Standardization bukan tujuan utama visualization — tiga goal utama adalah information, exploration, dan explanation."},
+{q:"What is an advantage of <b>Anonymization</b>?",o:["The organization cannot use personally identifiable information (PII) in their auditing process.","The organization must continuously track whether there is new data that needs to be anonymized.","The organization must work with data that is decreased in value and insight because of the anonymization.","The organizations' data cannot be misused after a data leak."],c:3,e:"Kalau data dah dianonymize dengan betul, walaupun ada data breach, data tu tak boleh disalahguna sebab dah takde link ke individu tertentu."},
+{q:"Which of the following cases constitutes misconduct for a data science professional?",o:["Using data with quality issues","Not meeting a project deadline","Present successful results only","Presenting results in text without visuals"],c:2,e:"Present hasil 'successful' je (cherry-picking) dan sorok hasil yang kurang menguntungkan adalah unethical — tak reflect true findings kepada client."},
+{q:"Regarding the intersection of events, if we define the sample space of a dice as {1, 2, 3, 4, 5, 6}, an event A as {1, 2, 3} and an event B as {1, 4, 5}, what is the intersection of A and B (A ∩ B)?",o:["{1}","{3}","{5}","{4, 5}"],c:0,e:"A={1,2,3}, B={1,4,5}. Nombor yang ada dalam KEDUA-DUA set tu je 1, so A∩B = {1}."},
+{q:"Regarding duties of a data science professional towards their client, which of the following is <b>NOT</b> one of them?",o:["Identifying relevant data sources for business needs","Maintain and safeguard source data integrity","Building predictive models","Analysing data for trends and patterns"],c:1,e:"Maintain & safeguard source data integrity tu lebih ke arah technical/internal duty (data governance) — bukan sesuatu yang dilakukan terus 'towards the client'."},
+{q:"Which of the following is <b>NOT</b> true about machine learning?",o:["The primary aim of machine learning is to allow the computer learn automatically","Machine learning focuses on develop computer programs that can learn for themselves using data","Optimal parameters are computed by machine learning programs","Data is normally generated by machine learning programs as output"],c:3,e:"ML programs biasanya GUNA data sebagai INPUT (untuk belajar), bukan generate data sebagai output."},
+{q:"When storing book information in a table, in which specific table element will all book titles be stored?",o:["Row","Column","Record","Field"],c:1,e:"Semua title buku (satu jenis attribute) akan disimpan dalam satu COLUMN yang sama, manakala setiap buku individu adalah satu ROW."},
+{q:"Which of the following is <b>NOT</b> one of the five V's characterizing Big Data?",o:["Velocity","Value","Vasteness","Volume"],c:2,e:"5 V's Big Data: Volume, Velocity, Variety, Veracity, Value. 'Vasteness' bukan istilah rasmi dalam framework ni."},
+{q:"Which of the following is <b>NOT</b> something you can do with SQL?",o:["Set user permissions on a tables","Manipulate data in a table","Drop an existing table","Export table data to CSV"],c:3,e:"Export terus ke format CSV biasanya fungsi client tool (macam pgAdmin, MySQL Workbench), bukan SQL command native itu sendiri."},
+{q:"What is the objective of the European Union General Data Protection Regulation (GDPR)?",o:["Safety handling the transfer of data across borders","Providing data breach notifications","Anonymizing collected data to protect privacy","Giving control over personal data back to people"],c:3,e:"Tujuan utama GDPR adalah bagi balik kawalan (control) data peribadi kepada individu — bukan sekadar handle transfer data merentas sempadan."},
+{q:"Using one fair dice, what is the probability of getting an even number when the dice is thrown?",o:["1/6","1/4","1/3","1/2"],c:3,e:"Nombor even pada dadu: 2, 4, 6 (3 daripada 6 outcome) = 3/6 = 1/2."},
+{q:"Which Phase in the CRISP-DM model contains Describing Data and Exploring Data?",o:["Data Understanding","Data Preparation","Evaluation","Business Understanding"],c:0,e:"Describing Data dan Exploring Data adalah aktiviti utama dalam phase Data Understanding CRISP-DM."},
+{q:"What technique has <b>NOT</b> been used to analyse data in a decentralized way?",o:["MapReduce","Hadoop","BiqQuery","RDMS"],c:3,e:"MapReduce, Hadoop, dan BigQuery direka untuk process data secara decentralized/distributed. RDBMS (traditional relational database) sebaliknya lebih centralized."},
+{q:"Which TWO of the following you can <b>NOT</b> perform without clear objectives?<br><br>I. Close a project properly<br>II. Evaluate the results<br>III. Explore Data<br>IV. Clean Data",o:["I & II","I & III","II & III","II & IV"],c:0,e:"Tanpa objective yang jelas, kau tak boleh 'close' project dengan proper (I), dan tak boleh evaluate hasil sebab takde success criteria yang jelas (II)."},
+{q:"Which of the following is the right way of defining an if statement in python?",o:["age = 20, if age >= 18, print('Adult')","age = 20, if age >= 18:, print('Adult')","age = 20, if age >= 18, print('Adult')","age = 20, if age >= 18:, print('Adult')"],c:3,e:"Syntax if statement Python yang betul kena ada colon (:) selepas condition, contoh: if age >= 18: print('Adult')."},
+{q:"Which of the following sentences about Artificial Intelligence (AI) is <b>CORRECT</b>?",o:["AI is concerned with getting computers to do tasks that would normally require scientific models.","AI is concerned with getting computers to do tasks that would normally require scientific knowledge.","AI is concerned with getting computers to do tasks that would normally require human interaction.","AI is concerned with getting computers to do tasks that would normally require human intelligence."],c:3,e:"AI pasal buat computer boleh buat task yang biasanya perlukan human intelligence — bukan scientific model/knowledge atau human interaction semata-mata."},
+{q:"Which of the following you should do?<br><br>I. Pre-filter a dashboard<br>II. Maximize KPI's shown on a dashboard<br>III. Describe KPI's",o:["I & II","II & III","I & III","III"],c:2,e:"Practice yang baik: pre-filter dashboard (fokus pada yang relevant) dan describe KPI's dengan jelas — bukan asyik nak maximize/cramkan semua KPI dalam satu dashboard."},
+{q:"Identify the missing words: 'A ___ is defined as a Deep Learning algorithm which can take in an input image, assign importance (learnable weights and biases) to various aspects/objects in the image and be able to differentiate one from the other.'",o:["Long Short-Term Memory (LSTM)","Convolutional Neural Network (CNN)","Recurrent Neural Network (RNN)","Tensorized Recurrent Neural Network (tRNN)"],c:1,e:"CNN memang direka khas untuk process image — dia assign weight/importance kepada bahagian-bahagian dalam gambar untuk bezakan objek."},
+{q:"Which of the following is <b>NOT</b> ensured by master data management?",o:["uniformity","semantic consistency","transactionality","accountability"],c:2,e:"Transactionality bukan concern utama Master Data Management — MDM lagi fokus pada uniformity, consistency, dan accountability data across organization."},
+{q:"Identify the missing words: 'Good Data Scientists are both rare and in high demand because practicing data science requires both ___, which is a rare and sought after combination.'",o:["computer science and social skills","computer science and pure science skills beyond those of a typical data analyst","",""],c:1,e:"Data Scientist yang bagus perlukan gabungan computer science DAN pure science (macam statistics/math) yang lebih dalam dari typical data analyst."},
+{q:"What does Data consistency mean?",o:["Data values stored for an object are the correct values","Data must be valid according to all defined rules","Values are correct and complete compared to the context","The data is available 24/7"],c:1,e:"Data consistency bermaksud data patuh (valid) kepada SEMUA rules/constraints yang ditetapkan — bukan sekadar 'nilai betul' je."},
+{q:"Which of the following is Probability theory a branch of?",o:["Statistics","Mathematics","Game and Gambling","Physics"],c:1,e:"Probability theory adalah cabang Mathematics."},
+{q:"Identify the missing words: 'In machine learning, ___ a(n) ___ is the process of feeding a Machine Learning ___ with data to help identify and learn good values for all attributes involved.'",o:["training, model, algorithm","training, algorithm, model","testing, model, algorithm","testing, algorithm, model"],c:1,e:"Training adalah proses feed data kepada ML ALGORITHM untuk hasilkan MODEL yang optimal (belajar parameter yang baik)."},
+{q:"Regarding the stages in the Data Science Lifecycle, in which phase we normally are performing the following tasks?<br><br>• Translate data into actual business terminology<br>• Provide real-world examples of benefits<br>• Solicit questions and feedback<br>• Use visualizations whenever applicable",o:["Data preparation","Measure effectiveness","Build Model","Communicate Results"],c:3,e:"Translate data ke business terminology, bagi contoh real-world, solicit feedback, guna visualization — semua ni aktiviti dalam phase Communicate Results."},
+{q:"What is <b>NOT</b> part of Data Governance?",o:["accessibility","ownership","integration","quality"],c:2,e:"Integration lebih ke arah data engineering/architecture concern. Data Governance fokus pada accessibility, ownership, dan quality data."},
+{q:"Which V of the Big Data 5 V's refers to how fast data is generated?",o:["Volume","Veracity","Variety","Velocity"],c:3,e:"Velocity merujuk pada KELAJUAN data dijana/generate."},
+{q:"Which part of ETL deals with altering data to fit the desired destination format?",o:["Load","Extract","Transform","Transfer"],c:2,e:"Transform adalah step dalam ETL yang ubah/proses data supaya sesuai dengan format destination. Extract ambil data, Load masukkan data."},
+{q:"Which role has a PRIMARY focus on the infrastructure?",o:["Data Analyst","Data Engineer","Data Scientist","Product Owner"],c:1,e:"Data Engineer fokus utama pada bina & maintain infrastructure (pipeline, storage) — beza dengan Data Scientist/Analyst yang lebih fokus pada analysis/insight."},
+{q:"Why is the ever-growing volume of data, a problem for traditional data technology?",o:["The speed of the network it connects to","The variety of data structures in the data being stored","The limited scalability for storing and processing of data","The value of the data is not clear"],c:2,e:"Traditional data technology ada limited scalability — susah nak handle volume data yang terus membesar tanpa upgrade infrastructure besar-besaran."},
+{q:"What is <b>NOT</b> a big data opportunity in Manufacturing?",o:["Food & Beverage: a sales and inventory system supermarkets","Automotive: Connected cars, Vehicles fleet management, custom car insurance","Preventive & predictive maintenance and asset management","Agriculture: Crop yield management by smart spraying, seeding, and harvesting"],c:0,e:"Sales & inventory system untuk supermarket lebih relevan ke sektor Retail/F&B, bukan sektor Manufacturing secara spesifik."},
+{q:"Which of the following are examples of supervised/unsupervised learning in Machine Learning?<br><br>I. Anomaly detection<br>II. Linear regression",o:["I. Supervised, II. Unsupervised","I. Unsupervised, II. Unsupervised","I. Supervised, II. Supervised","I. Unsupervised, II. Supervised"],c:3,e:"Anomaly detection biasanya unsupervised (takde label 'normal/anomaly' explicit), manakala Linear regression adalah contoh classic supervised learning (ada target value)."},
+{q:"Identify the missing words: 'The sample space associated with a random experiment is the set of ___ possible outcomes.'",o:["some","any","all","none"],c:2,e:"Sample space adalah set kesemua (ALL) possible outcome daripada satu random experiment — bukan 'some' atau 'any' je."}
+];
+
+const analystA = [
+{q:"Identify the following words in the following sentence:<br><br>'Machine Learning (ML) provides systems the ability to automatically learn from ___ and/or from ___, without being explicitly programmed.'",o:["experience, past data","text, instructions","logic, rules","SQL databases, API's"],c:0,e:"ML systems belajar secara automatik daripada experience dan/atau past data — bukan dari text instructions atau rules yang di-hardcode."},
+{q:"Which of the following is the <b>CORRECT</b> order of the three main stages of Git?",o:["Staged, Committed, Modified","Committed, Staged, Modified","Modified, Staged, Committed","Modified, Committed, Staged"],c:2,e:"Git workflow: fail yang kau edit jadi Modified dulu → 'git add' jadikan dia Staged → 'git commit' jadikan dia Committed."},
+{q:"In differential privacy, the amount of variation caused by adding noise is configurable through a parameter called epsilon. Imagine that you are developing a model to predict the gender based on different measures of bone remains (like longitude, thickness, ...). To ensure data anonymization, you apply differential privacy and these are the results:<div class='q-table-wrap'><table class='q-table'><tr><th></th><th>Exact avg (mm)</th><th>Anonymized avg (mm)</th></tr><tr><td>Female</td><td>104.93</td><td>102.71</td></tr><tr><td>Male</td><td>113.65</td><td>118.33</td></tr></table></div>Which of the following is the <b>MOST</b> compatible value of epsilon applied in the anonymization process?",o:["0","0.1","100","1000"],c:1,e:"Epsilon kecil = lebih banyak noise ditambah (privacy tinggi, utility rendah); epsilon besar = kurang noise (utility tinggi, privacy rendah). Sebab nilai anonymized dalam data ni masih cukup dekat dengan exact value tapi ada beza yang meaningful, epsilon = 0.1 (nilai biasa untuk 'strong privacy' dalam DP) paling sesuai berbanding 100/1000 yang nyaris takde noise."},
+{q:"What is Publishing?",o:["Making an export of data to an Excel file","Sharing a report to other people in your organization","Sending a report to a workspace in Power BI Service in the cloud","Capturing the current state of a report page by creating a personal bookmark"],c:2,e:"Dalam Power BI, 'Publishing' spesifik bermaksud hantar report ke workspace dalam Power BI Service (cloud) — beza dengan 'Sharing' yang bagi orang lain access kepada report tu."},
+{q:"Big Data is often explained with the 5 V's. Which V refers to the scale of the data?",o:["Volume","Velocity","Variety","Veracity"],c:0,e:"Volume merujuk pada SAIZ/SCALE data — berapa banyak data yang ada."},
+{q:"Which language is designed especially for statistical analysis and visualization?",o:["Python","C++","R","Java"],c:2,e:"R memang direka khas untuk statistical computing dan visualization, berbeza dengan Python yang lebih general-purpose."},
+{q:"If we suspect that there is a correlation between two variables but it doesn't seem to be strictly linear (data shows points trending upward in a curved, non-linear pattern):",o:["Spearman's correlation assesses monotonic relationships (whether linear or not) and the value of this coefficient in the data of the picture should be around 0.9","Pearson's correlation assesses monotonic relationships (whether linear or not) and the value of this coefficient in the data of the picture should be around 0.9","Spearman's correlation assesses monotonic relationships (whether linear or not) and the value of this coefficient in the data of the picture should be around -0.9","Pearson's correlation assesses monotonic relationships (whether linear or not) and the value of this coefficient in the data of the picture should be around -0."],c:0,e:"Spearman's correlation ukur monotonic relationship (data consistently naik sama-sama, walaupun bentuk tak linear) — sesuai untuk pattern melengkung macam ni. Pearson pulak khusus untuk linear relationship je."},
+{q:"Which of the following is <b>FALSE</b> about Boosting?",o:["It is a general ensemble method that combines weak learners together","Models are trained independently from each other on different bootstrap samples","In Gradient Boosting, each predictor is trained using the residual errors of predecessor as labels","Two known examples are XGBoost and LightGBM which focus on optimizing computing resources"],c:1,e:"Statement ni FALSE sebab Boosting sebenarnya latih model secara SEQUENTIAL (satu-satu, setiap model betulkan kesilapan model sebelum) — bukan independently macam Bagging/Random Forest."},
+{q:"Which of the following is <b>NOT</b> an advantage of a NoSQL Database?",o:["Simplicity of design","Handles large volumes of data at high speed with a scale-out architecture","Handles only structural data","Take full advantage of the cloud to deliver zero downtime"],c:2,e:"NoSQL sebenarnya kuat dengan data yang TAK structured/semi-structured (flexible schema) — jadi 'hanya handle structural data' tu sebenarnya kelemahan relational DB, bukan advantage NoSQL."},
+{q:"Which of the following statements about supervised learning in Machine Learning is <b>TRUE</b>?",o:["It is carried out without pre-existing tables","A typical example is k-means clustering","Two subcategories are classification and regression","Linear regression is not an example"],c:2,e:"Supervised learning ada dua subcategory: classification dan regression. K-means clustering pulak contoh unsupervised learning."},
+{q:"Computer Vision and Natural Language Processing are subsets of which of the following?",o:["Machine Learning","Software Engineering","Artificial Intelligence","Data Engineering"],c:2,e:"Computer Vision dan NLP adalah dua application domain besar di bawah payung Artificial Intelligence yang lebih luas, dengan Machine Learning sebagai salah satu approach untuk selesaikan masalah dalam domain-domain tu."},
+{q:"Given the following table named movies, which query would you use to get a list of all the Sci-Fi movies in the table?<div class='q-table-wrap'><table class='q-table'><tr><th>Genre</th><th>Title</th><th>Starring</th><th>IMDb</th></tr><tr><td>Drama</td><td>The Shawshank Redemption</td><td>Tim Robbins, Morgan Freeman</td><td>9.3</td></tr><tr><td>Drama</td><td>The Godfather</td><td>Marlon Brando, Al Pacino</td><td>9.2</td></tr><tr><td>Action</td><td>The Dark Knight</td><td>Christian Bale, Heath Ledger</td><td>9.0</td></tr><tr><td>Thriller</td><td>Pulp Fiction</td><td>John Travolta, Uma Thurman</td><td>8.9</td></tr><tr><td>Sci-Fi</td><td>Inception</td><td>Leonardo DiCaprio, J. Gordon-Levitt</td><td>8.8</td></tr><tr><td>Western</td><td>The Good, the Bad and the Ugly</td><td>Clint Eastwood, Eli Wallach</td><td>8.8</td></tr><tr><td>Sci-Fi</td><td>The Matrix</td><td>Keanu Reeves, L. Fishburne</td><td>8.7</td></tr><tr><td>Drama</td><td>Forrest Gump</td><td>Tom Hanks</td><td>8.8</td></tr><tr><td>Sci-Fi</td><td>Interstellar</td><td>M. McConaughey, Anne Hathaway</td><td>8.6</td></tr><tr><td>Drama</td><td>Schindler's List</td><td>Liam Neeson, Ben Kingsley</td><td>8.9</td></tr></table></div>",o:["SELECT 'Sci-Fi' FROM movies;","SELECT genre FROM movies where genre 'Sci-Fi';","SELECT movies WHERE genre 'Sci-Fi';","SELECT * FROM movies WHERE genre 'Sci-Fi';"],c:3,e:"Nak dapatkan SEMUA column untuk row yang genre = 'Sci-Fi', kena guna SELECT * FROM movies WHERE genre = 'Sci-Fi';"},
+{q:"Which of the following is <b>NOT</b> a distance or similarity function for clustering algorithms?",o:["Manhattan distance","Chicago distance","Euclidian distance","Cosine distance"],c:1,e:"'Chicago distance' bukan metric yang wujud dalam clustering — Manhattan, Euclidean, dan Cosine semuanya real distance/similarity function yang biasa digunakan."},
+{q:"Which of the following is <b>FALSE</b> regarding the uncertainty in a sample?",o:["Replicate samples, produced by repeated independent applications of the sampling protocol, will have always identical compositions.","A frequency table involves a listing of all the observed values of the variable being studied and how many times each value is observed.","Data can be presented graphically by means of a bar graph, where the height of each bar is proportional to the frequency in the class represented.","To collect and summarize large amounts of data, it can be recorded in the form of a frequency table."],c:0,e:"Statement ni FALSE sebab replicate sample (walaupun proses sampling sama) TAK akan selalu bagi komposisi yang identical — memang ada natural variability/randomness dalam sampling."},
+{q:"Which of the following BEST describes machine learning?",o:["Machine learning is a series of computer programs that can access data and through human input can learn in a manual manner.","Artificial Intelligence (AI) is an application of machine learning that provides systems the ability to automatically learn and improve from experience and/or from past cases, without being explicitly programmed.","Machine learning is an application of artificial intelligence (AI) that provides systems the ability to automatically learn and improve from experience and/or from past cases, without being explicitly programmed.","Machine learning is the use of a computer program that focuses on the use of data and algorithms to learn in a different manner than humans do."],c:2,e:"Machine Learning adalah application/subset daripada Artificial Intelligence yang bagi sistem kebolehan belajar secara automatik dari experience/past data, tanpa perlu di-program secara explicit untuk setiap scenario."},
+{q:"What does the acronym SQL stand for?",o:["Standard Quick Loading","Standard Query Language","Structured Query Language","Structured Quick Loading"],c:2,e:"SQL = Structured Query Language."},
+{q:"You want to visualize a dataset that is changing over time, has many periods and only relative differences matter. What is the BEST visualization you can choose? (options: Stacked 100% Bar Chart, Stacked Bar Chart, Stacked Area 100% Chart, Stacked Area Chart)",o:["Stacked 100% Bar Chart","Stacked Bar Chart","Stacked Area 100% Chart","Stacked Area Chart"],c:2,e:"Stacked Area 100% Chart sesuai bila kau nak tunjuk RELATIVE proportion (peratusan) setiap kategori berubah over banyak time period — semua 'jalur' jadi 100% so senang compare relative share antara period."},
+{q:"Which TWO of the following statements are TRUE in regards to time series forecasting?<br><br>I. Only series with regularly spaced intervals should be considered<br>II. The accuracy of the forecast is independent of how well the model performs<br>III. It is a common practice to use both training and test data when choosing a model<br>IV. Historical data are only to be used for forecasts disregarding any external factors",o:["I & II","I & III","II & IV","III & IV"],c:1,e:"Time series patut ada interval yang regular (I), dan common practice untuk guna both training AND test data bila nak pilih model terbaik (III)."},
+{q:"Which is the mode from the given data {4, 2, 2, 2, 2, 5}?",o:["5","2","3","4"],c:1,e:"Mode adalah nilai yang paling kerap muncul — 2 muncul 4 kali (paling banyak), so mode = 2."},
+{q:"Regarding data types in statistics, identify the missing words in the following sentence:<br><br>'___ data is represented by some qualitative rather than by a numerical measurement, for example, binary data (1 or 0) or unordered categories (Blood type: A, B, AB and O).'",o:["Nominal or categorical","Ordinal","Continuous","Text"],c:0,e:"Data qualitative macam blood type = nominal atau categorical data."},
+{q:"Which of the following answers what data is important and why?",o:["Network security","Access control","Legislation on data privacy","Breach response"],c:2,e:"Legislation on data privacy (macam GDPR/PDPA) explain kenapa data itu penting dan perlu dijaga — ia bagi context 'why' dari segi legal/compliance."},
+{q:"Which of the following data sets will have the highest Interquartile Range (IQR)?",o:["{1, 1, 1, 1, 1, 1}","{1, 2, 3, 4, 5, 6, 10000}","{1, 1, 1, 2, 2, 2}","{1, 1, 1, 10, 10, 10, 10}"],c:1,e:"Ikut kunci jawapan sumber, B dianggap ada IQR paling tinggi sebab julat data yang sangat luas (1 hingga 10000). <b>Nota:</b> kalau dikira Q3−Q1 secara tepat, D sebenarnya boleh keluar lebih tinggi — soalan ni berbaloi disemak balik dengan pensyarah untuk kepastian 100%."},
+{q:"Regarding data types in statistics, identify the missing words in the following sentence:<br><br>'___ data consist of a ranking of measurements like the Likert scale.'",o:["Nominal or categorical","Ordinal","Continuous","Test"],c:1,e:"Data yang representkan RANKING/urutan (macam skala Likert: strongly disagree → strongly agree) dipanggil ordinal data."},
+{q:"Which of the following consumes space in memory when creating it?",o:["Operators","Data Types","Variables","Keywords"],c:2,e:"Variables adalah yang sebenarnya 'occupy' memory space bila kau create dia untuk simpan value. Data types cuma describe jenis data, operators/keywords just symbols dalam bahasa."},
+{q:"Which of the following statements about interpreted languages is <b>TRUE</b>?",o:["Code is converted directly into machine code that the processor can execute","Provide the developer more control over hardware aspects (i.e. CPU usage)","Need a 'build' step before running","Run through a program line by line and execute each command"],c:3,e:"Interpreted language run code line-by-line (execute terus setiap command), tak perlu 'build/compile' step dulu sebelum boleh run."},
+{q:"Which description refers to the CRISP-DM phase Modelling?",o:["Find useful patterns – What model should I build with which data features?","Assess data – What data might be useful for this problem to build a model with?","Evaluate results and define improvements – How good does my model perform?","Set objectives and plan – What is the problem / question we need a model for?"],c:0,e:"Phase Modelling dalam CRISP-DM tu pasal cari useful pattern — soalan utama: 'model apa yang patut aku bina, dengan data feature yang mana?'"},
+{q:"Which of the following is <b>FALSE</b> about data sanitization?",o:["Sanitation is defined as process to increase the uncertainty in the data in order to preserve privacy","As data becomes more and more scrubbed of personal information, its usefulness for research and analytics directly decreases","With the latest technologies of deep learning, we can obtain maximal utility and maximal privacy at the same time","Differential privacy mechanisms can offer a trade-off between privacy and utility by using privacy metrics and utility metrics"],c:2,e:"Statement ni FALSE sebab dalam reality, MEMANG ada trade-off antara privacy dan utility — takde teknologi (termasuk deep learning) yang boleh bagi both maximal privacy DAN maximal utility serentak."},
+{q:"Given the following table named movies, which query would you use to delete all Crime movies from the database?<div class='q-table-wrap'><table class='q-table'><tr><th>Genre</th><th>Title</th><th>Starring</th><th>IMDb</th></tr><tr><td>Drama</td><td>The Shawshank Redemption</td><td>Tim Robbins, Morgan Freeman</td><td>9.3</td></tr><tr><td>Crime</td><td>The Godfather</td><td>Marlon Brando, Al Pacino</td><td>9.2</td></tr><tr><td>Action</td><td>The Dark Knight</td><td>Christian Bale, Heath Ledger</td><td>9.0</td></tr><tr><td>Thriller</td><td>Pulp Fiction</td><td>John Travolta, Uma Thurman</td><td>8.9</td></tr><tr><td>Sci-fi</td><td>Inception</td><td>Leonardo DiCaprio, J. Gordon-Levitt</td><td>8.8</td></tr><tr><td>Western</td><td>The Good, the Bad and the Ugly</td><td>Clint Eastwood, Eli Wallach</td><td>8.8</td></tr><tr><td>Sci-fi</td><td>The Matrix</td><td>Keanu Reeves, L. Fishburne</td><td>8.7</td></tr><tr><td>Crime</td><td>Goodfellas</td><td>Robert De Niro, Ray Liotta</td><td>8.7</td></tr><tr><td>Drama</td><td>Saving Private Ryan</td><td>Tom Hanks, Matt Damon</td><td>8.6</td></tr></table></div>",o:["DELETE FROM movies WHERE id = 2;","DELETE FROM movies WHERE id = 2 AND id = 7;","DELETE 'Crime' FROM movies;","DELETE FROM movies WHERE genre = Crime;"],c:3,e:"Nak delete row berdasarkan kondisi genre, kena guna WHERE clause: DELETE FROM movies WHERE genre = Crime; — bukan target specific ID secara manual satu-satu."},
+{q:"Identify the missing words: '___ is a form of ___ which seeks to protect individual data values by adding statistical 'noise' to the analysis process.'",o:["Differential privacy, random perturbations","Random perturbations, generalization","Random perturbation, pseudo-anonymization","Differential privacy, pseudo-anonymization"],c:0,e:"Differential privacy adalah satu bentuk random perturbation yang tambah 'noise' statistik untuk protect individual data values dalam proses analysis."},
+{q:"Which of the following are advantages of moving your Big Data Storage to the cloud?",o:["Agile infrastructure, Lower total IT costs","Up-to-date technologies, Lower engineering costs","Focus on business value, improved security","Reliability and availability, Better privacy"],c:0,e:"Agile infrastructure dan lower total IT cost adalah antara advantage utama pindah Big Data storage ke cloud — senang scale up/down ikut keperluan."},
+{q:"Which of the following lists contain only sensitive personal data as defined by GDPR?",o:["Religion, Age, Health information","Political sympathy, Location history, Nationality","Race, DNA profile, Fingerprint scan","IP Address, ID card number, Sexual orientation"],c:2,e:"Race, DNA profile, dan fingerprint scan semuanya masuk kategori 'special category data' (sensitive) di bawah GDPR. Age atau IP address contohnya personal data biasa, bukan sensitive category."},
+{q:"Which type of Data Analytics would you use for a problem relating to the question 'What has happened and what is happening right now?'",o:["Descriptive","Diagnostic","Predictive","Prescriptive"],c:0,e:"Descriptive analytics jawab soalan 'apa yang dah/sedang berlaku' — guna data histori untuk describe current/past state."},
+{q:"A splitting of software development work into distinct phases (or stages) containing activities with the intent of better planning and management describes:",o:["Requirement Capturing","Project Management","Application Development","Data Science"],c:2,e:"Splitting kerja software development kepada phase/stage yang distinct (untuk planning & management lebih baik) tu describe konsep Application Development (SDLC), bukan Data Science secara khusus."},
+{q:"Which of the following is considered an advantage of using cloud storage?",o:["Focus placed on business value","Focus placed on infrastructure","Data locality and consistency","Reduced Costs"],c:3,e:"Reduced cost (pay-as-you-go, tak perlu invest infrastructure sendiri) adalah salah satu advantage utama cloud storage."}
+];
+
+const analystB = [
+{q:"Which of the following is an interpreted language?",o:["C","C++","Python","Rust"],c:2,e:"Python adalah interpreted language (code dijalankan line-by-line oleh interpreter) — C, C++ dan Rust semuanya compiled language."},
+{q:"Which logical operator returns True only if both conditions are True?",o:["OR","AND","NOT","XOR"],c:1,e:"AND return True HANYA bila KEDUA-DUA condition True. OR return True kalau salah satu condition true."},
+{q:"Which keyword is used to define a function in Python?",o:["function","def","define","func"],c:1,e:"Dalam Python, keyword 'def' digunakan untuk define satu function."},
+{q:"Which JOIN returns all records from the left table even if there is no match?",o:["INNER JOIN","LEFT JOIN","RIGHT JOIN","FULL JOIN"],c:1,e:"LEFT JOIN return SEMUA record dari table kiri (left), walaupun takde match kat table kanan (column kanan jadi NULL)."},
+{q:"Which SQL command retrieves data from a table?",o:["INSERT","SELECT","UPDATE","DELETE"],c:1,e:"SELECT adalah command SQL untuk retrieve/ambil data dari table."},
+{q:"Which clause groups rows for aggregate functions?",o:["ORDER BY","GROUP BY","WHERE","DISTINCT"],c:1,e:"GROUP BY digunakan untuk group rows sebelum apply aggregate function (macam SUM, COUNT, AVG) pada setiap group."},
+{q:"SQL is primarily used to interact with:",o:["File systems","Operating systems","Relational databases","Web servers"],c:2,e:"SQL direka khas untuk interact dengan relational databases."},
+{q:"Which JOIN returns only matching records from both tables?",o:["LEFT JOIN","RIGHT JOIN","FULL JOIN","INNER JOIN"],c:3,e:"INNER JOIN hanya return row yang ADA match kat KEDUA-DUA table."},
+{q:"What is the purpose of indentation in Python?",o:["Improve readability only","Define code blocks","Reduce memory usage","Increase execution speed"],c:1,e:"Dalam Python, indentation bukan sekadar untuk kemas — ia sebenarnya DEFINE code block (macam dalam if/for/function), beza dengan bahasa lain yang guna {} atau begin/end."},
+{q:"What happens if a function is called with fewer arguments than required?",o:["The program ignores missing values","The function executes partially","The interpreter throws an error","Default values are assigned"],c:2,e:"Kalau function dipanggil dengan argument kurang dari yang diperlukan (dan takde default value), Python interpreter akan throw error."},
+{q:"What keyword is used to rename a column in SQL results?",o:["RENAME","AS","ALIAS","NAME"],c:1,e:"Keyword 'AS' digunakan untuk bagi alias/rename column dalam SQL result."},
+{q:"Which SQL keyword removes a table completely?",o:["DELETE","REMOVE","DROP","CLEAR"],c:2,e:"DROP akan buang keseluruhan table (struktur + data) secara permanent dari database."},
+{q:"What does a FULL OUTER JOIN return?",o:["Only matching rows","Only left table rows","Only right table rows","All rows from both tables"],c:3,e:"FULL OUTER JOIN return SEMUA row dari KEDUA-DUA table, sama ada match atau tak (unmatched jadi NULL)."},
+{q:"What does an algorithm represent?",o:["A database schema","A step-by-step procedure to solve a problem","A programming language","A hardware instruction set"],c:1,e:"Algorithm adalah satu set langkah (step-by-step procedure) untuk selesaikan masalah tertentu."},
+{q:"Which language executes instructions directly in binary form?",o:["Assembly language","High-level language","Machine language","Python"],c:2,e:"Machine language adalah bahasa paling low-level yang processor boleh execute terus dalam bentuk binary (0 dan 1), tanpa perlu translation lagi."},
+{q:"What is the default PostgreSQL port number?",o:["3306","1433","1521","5432"],c:3,e:"Port default untuk PostgreSQL adalah 5432 (MySQL guna 3306, SQL Server guna 1433, Oracle guna 1521)."},
+{q:"Which SQL function returns the number of rows?",o:["SUM","AVG","COUNT","MAX"],c:2,e:"COUNT() digunakan untuk kira bilangan rows dalam SQL."},
+{q:"What does range(5) generate?",o:["1 to 5","0 to 5","0 to 4","1 to 4"],c:2,e:"range(5) dalam Python generate 5 nombor bermula dari 0, iaitu 0,1,2,3,4 — endpoint (5) tak termasuk."},
+{q:"What does SQL stand for?",o:["Structured Query Language","Sequential Query Language","Simple Query Logic","Standard Question Language"],c:0,e:"SQL = Structured Query Language."},
+{q:"Which SQL command adds new records to a table?",o:["CREATE","INSERT","ALTER","SELECT"],c:1,e:"INSERT digunakan untuk tambah rekod/row baru dalam table."},
+{q:"What happens if an UPDATE statement is executed without a WHERE clause?",o:["Only one record is updated","The query fails","All rows are updated","Nothing changes"],c:2,e:"Kalau UPDATE dijalankan TANPA WHERE clause, SEMUA row dalam table akan diupdate — bahaya besar kalau tak sengaja!"},
+{q:"Which Python structure allows repeated execution of code?",o:["Function","Variable","Loop","Operator"],c:2,e:"Loop (for/while) membolehkan satu blok code dijalankan berulang kali."},
+{q:"Which SQL clause filters records?",o:["GROUP BY","ORDER BY","WHERE","HAVING"],c:2,e:"WHERE clause digunakan untuk filter/tapis row berdasarkan kondisi tertentu, sebelum data di-group."},
+{q:"What is a primary risk of DELETE statements without conditions?",o:["Data duplication","Data loss","Slower queries","Syntax errors"],c:1,e:"DELETE tanpa kondisi (WHERE clause) akan padam SEMUA row dalam table — risiko data loss yang besar."},
+{q:"Which characteristic distinguishes compiled languages?",o:["They execute code line by line","They require an interpreter","They convert code directly to machine code","They cannot access hardware"],c:2,e:"Compiled language convert source code TERUS kepada machine code (melalui compiler) sebelum dijalankan — beza dengan interpreted language yang run line-by-line."},
+{q:"Which two programming languages are highlighted as dominant in Data Science?",o:["Java and C++","SQL and HTML","Python and R","PHP and Ruby"],c:2,e:"Python dan R adalah dua bahasa paling dominant/popular dalam bidang Data Science."},
+{q:"What is a key advantage of using functions?",o:["Slower execution","Code duplication","Code reusability","Larger memory usage"],c:2,e:"Kelebihan utama guna function adalah code reusability — boleh guna balik code yang sama tanpa perlu tulis semula."},
+{q:"Python is best described as a:",o:["Compiled low-level language","Markup language","Interpreted high-level language","Assembly language"],c:2,e:"Python adalah interpreted, high-level programming language — senang dibaca dan tak perlu compile dulu sebelum run."},
+{q:"Which aggregate function ignores NULL values?",o:["COUNT","MIN","SUM","All of the above"],c:3,e:"SEMUA aggregate function standard (COUNT, MIN, SUM, dan lain-lain) secara default ignore NULL values dalam calculation dia."},
+{q:"What is the primary purpose of programming in Data Science and Data Analytics?",o:["To design hardware systems","To communicate instructions to computers","To replace databases","To eliminate statistics"],c:1,e:"Tujuan utama programming dalam Data Science/Analytics adalah communicate instructions kepada komputer supaya boleh process/analyze data."},
+{q:"Which of the following is <b>NOT</b> a valid Python variable name?",o:["my_value","value1","1value","value_one"],c:2,e:"Nama variable dalam Python TAK boleh start dengan digit/nombor — kena start dengan letter atau underscore."},
+{q:"What does RDBMS stand for?",o:["Relational Data Backup Management System","Remote Database Management System","Relational Database Management System","Real-time Database Monitoring System"],c:2,e:"RDBMS = Relational Database Management System."},
+{q:"Which SQL command is used to change existing data?",o:["MODIFY","UPDATE","ALTER","INSERT"],c:1,e:"UPDATE digunakan untuk ubah/kemaskini data yang SEDIA ADA dalam table — beza dengan INSERT yang tambah row baru."},
+{q:"Which loop is best when the number of iterations is known?",o:["while loop","do-while loop","for loop","infinite loop"],c:2,e:"For loop paling sesuai bila kau dah tahu EXACT bilangan iteration yang diperlukan, contoh: loop 10 kali."},
+{q:"What symbol is used for variable assignment in Python?",o:["==",":=","=","=>"],c:2,e:"Dalam Python, simbol '=' digunakan untuk assignment (bagi value kepada variable), manakala '==' untuk check equality/perbandingan."},
+{q:"Which SQL statement permanently removes data?",o:["DROP","DELETE","TRUNCATE","SELECT"],c:1,e:"DELETE adalah command standard untuk buang row data berdasarkan kondisi tertentu. DROP pula buang keseluruhan table struktur, manakala TRUNCATE reset semua row tapi kekalkan struktur table."},
+{q:"Which operator checks equality in Python?",o:["=","!=","==","==="],c:2,e:"'==' digunakan untuk check/compare equality dalam Python. '=' pulak untuk assignment (bukan perbandingan)."}
+];
+
+const DATA = {
+  "found-a": { label:"Set A", category:"Data Foundation", cls:"foundation", questions: foundationA },
+  "found-b": { label:"Set B", category:"Data Foundation", cls:"foundation", questions: foundationB },
+  "an-a":    { label:"Set A", category:"Data Analyst", cls:"analyst", questions: analystA },
+  "an-b":    { label:"Set B", category:"Data Analyst", cls:"analyst", questions: analystB }
+};
+
+/* =========================================================
+   APP STATE + LOGIC
+   ========================================================= */
+let state = { screen:"home", setKey:null, qi:0, score:0, locked:false, selected:null, wrong:[], reviewOpen:false };
+
+function resetRun(){ state.qi=0; state.score=0; state.locked=false; state.selected=null; state.wrong=[]; state.reviewOpen=false; }
+function goHome(){ state.screen="home"; state.setKey=null; resetRun(); render(); }
+function startSet(key){ state.screen="quiz"; state.setKey=key; resetRun(); render(); window.scrollTo(0,0); }
+function retrySet(){ startSet(state.setKey); }
+
+function selectOpt(i){
+  if(state.locked) return;
+  state.locked = true;
+  state.selected = i;
+  const q = DATA[state.setKey].questions[state.qi];
+  if(i === q.c){ state.score++; }
+  else { state.wrong.push({ q: q.q, your: q.o[i], correct: q.o[q.c], e: q.e }); }
+  render();
+}
+
+function nextQ(){
+  const total = DATA[state.setKey].questions.length;
+  if(state.qi + 1 >= total){ state.screen="result"; render(); window.scrollTo(0,0); return; }
+  state.qi++; state.locked=false; state.selected=null; render(); window.scrollTo(0,0);
+}
+
+function toggleReview(){ state.reviewOpen = !state.reviewOpen; render(); }
+
+document.addEventListener("keydown", (e)=>{
+  if(state.screen !== "quiz") return;
+  const k = e.key;
+  if(!state.locked && ["1","2","3","4"].includes(k)){
+    selectOpt(parseInt(k,10)-1);
+  } else if(state.locked && (k==="Enter" || k===" ")){
+    e.preventDefault(); nextQ();
+  }
+});
+
+function esc(s){ return s; } // content is trusted (authored), HTML allowed for tables/formatting
+
+function render(){
+  const root = document.getElementById("app");
+  if(state.screen==="home") root.innerHTML = viewHome();
+  else if(state.screen==="quiz") root.innerHTML = viewQuiz();
+  else root.innerHTML = viewResult();
+  attachHandlers();
+}
+
+function viewHome(){
+  let cards = "";
+  for(const key in DATA){
+    const s = DATA[key];
+    cards += `
+      <div class="set-card ${s.cls}">
+        <span class="cat">${s.category}</span>
+        <h3>${s.label}</h3>
+        <span class="count">${s.questions.length} soalan</span>
+        <button class="go-btn" data-start="${key}">Mula &rarr;</button>
+      </div>`;
+  }
+  return `
+    <div class="brand">
+      <div class="stamp-mini">DS</div>
+      <div class="brand-text">
+        <p class="eyebrow">Pusat Semakan</p>
+        <h1>Data Foundation &amp; Data Analyst</h1>
+      </div>
+    </div>
+    <p class="home-intro">Pilih set yang nak diulangkaji. Setiap soalan akan bagi jawapan &amp; penerangan serta-merta lepas kau jawab, dan markah penuh keluar di hujung set.</p>
+    <div class="set-grid">${cards}</div>
+    <p class="footnote">Sumber soalan: PDF exam review yang kau upload &middot; dijana semula sebagai latihan interaktif</p>
+  `;
+}
+
+function viewQuiz(){
+  const set = DATA[state.setKey];
+  const total = set.questions.length;
+  const q = set.questions[state.qi];
+  const pct = Math.round(((state.qi)/total)*100);
+
+  let optsHtml = "";
+  const letters = ["A","B","C","D"];
+  q.o.forEach((opt, i)=>{
+    if(opt === "") return;
+    let cls = "opt";
+    let mark = "";
+    if(state.locked){
+      cls += " locked";
+      if(i === q.c){ cls += " correct stamp-pop"; mark = "&#10003;"; }
+      else if(i === state.selected){ cls += " wrong stamp-pop"; mark = "&#10007;"; }
+      else { cls += " dim"; }
+    }
+    optsHtml += `
+      <button class="${cls}" data-opt="${i}" ${state.locked?"disabled":""}>
+        <span class="letter">${letters[i]}</span>
+        <span class="otext">${opt}</span>
+        ${mark ? `<span class="mark-icon">${mark}</span>` : ""}
+      </button>`;
+  });
+
+  let feedback = "";
+  let note = "";
+  let nextBtn = "";
+  if(state.locked){
+    const isCorrect = state.selected === q.c;
+    feedback = `<div class="feedback-banner ${isCorrect?"good":"bad"}">${isCorrect ? "&#10003; Betul!" : "&#10007; Belum tepat"}</div>`;
+    note = `<div class="note"><span class="note-label">Penerangan</span>${q.e}</div>`;
+    const isLast = state.qi + 1 >= total;
+    nextBtn = `<div class="next-row"><button class="next-btn" id="nextBtn">${isLast ? "Lihat Markah" : "Seterusnya"} &rarr; <span class="kbd-hint">(Enter)</span></button></div>`;
+  }
+
+  return `
+    <div class="quiz-top">
+      <button class="back-link" id="backBtn">&larr; Set</button>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>${set.category} — ${set.label}</span><span>Soalan ${state.qi+1} / ${total}</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="score-badge">${state.score} / ${total}</div>
+    </div>
+    <div class="q-card">
+      <p class="q-text">${q.q}</p>
+      <div class="options">${optsHtml}</div>
+      ${feedback}
+      ${note}
+    </div>
+    ${nextBtn}
+  `;
+}
+
+function viewResult(){
+  const set = DATA[state.setKey];
+  const total = set.questions.length;
+  const score = state.score;
+  const pct = Math.round((score/total)*100);
+
+  let tier, stampColor;
+  if(pct >= 90){ tier = "Cemerlang! Betul-betul dah master topik ni."; stampColor = "var(--green-pen)"; }
+  else if(pct >= 70){ tier = "Bagus — tinggal sikit lagi nak solid sepenuhnya."; stampColor = "var(--teal)"; }
+  else if(pct >= 50){ tier = "Okay, tapi ada beberapa topik patut diulangkaji balik."; stampColor = "var(--gold)"; }
+  else { tier = "Jangan risau — ni sebab tu kita ulangkaji. Cuba lagi sekali."; stampColor = "var(--red-pen)"; }
+
+  let reviewHtml = "";
+  if(state.wrong.length > 0){
+    reviewHtml = `<button class="review-toggle" id="reviewToggle">${state.reviewOpen ? "Sembunyikan" : "Semak balik"} ${state.wrong.length} soalan yang tersalah &darr;</button>`;
+    if(state.reviewOpen){
+      let items = "";
+      state.wrong.forEach(w=>{
+        items += `
+          <div class="review-item">
+            <p class="rq">${w.q}</p>
+            <p class="ra you">Jawapan kau: ${w.your}</p>
+            <p class="ra correct">Jawapan betul: ${w.correct}</p>
+            <p class="re">${w.e}</p>
+          </div>`;
+      });
+      reviewHtml += `<div class="review-list">${items}</div>`;
+    }
+  } else {
+    reviewHtml = `<p style="color:#dce9e5;font-size:.9rem;">Semua soalan betul — takde yang perlu disemak balik!</p>`;
+  }
+
+  return `
+    <div class="result-wrap">
+      <div class="stamp-big" style="--stampcolor:${stampColor}">
+        <span class="score-num">${score}/${total}</span>
+        <span class="score-pct">${pct}%</span>
+      </div>
+      <p class="result-msg">${tier}</p>
+      <p class="result-sub">${set.category} &middot; ${set.label}</p>
+      <div class="result-actions">
+        <button class="btn-solid" id="retryBtn">Cuba Lagi Set Ni</button>
+        <button class="btn-ghost" id="homeBtn">Pilih Set Lain</button>
+      </div>
+      ${reviewHtml}
+    </div>
+  `;
+}
+
+function attachHandlers(){
+  document.querySelectorAll("[data-start]").forEach(btn=>{
+    btn.addEventListener("click", ()=> startSet(btn.getAttribute("data-start")));
+  });
+  const backBtn = document.getElementById("backBtn");
+  if(backBtn) backBtn.addEventListener("click", goHome);
+  document.querySelectorAll("[data-opt]").forEach(btn=>{
+    btn.addEventListener("click", ()=> selectOpt(parseInt(btn.getAttribute("data-opt"),10)));
+  });
+  const nextBtn = document.getElementById("nextBtn");
+  if(nextBtn) nextBtn.addEventListener("click", nextQ);
+  const retryBtn = document.getElementById("retryBtn");
+  if(retryBtn) retryBtn.addEventListener("click", retrySet);
+  const homeBtn = document.getElementById("homeBtn");
+  if(homeBtn) homeBtn.addEventListener("click", goHome);
+  const reviewToggle = document.getElementById("reviewToggle");
+  if(reviewToggle) reviewToggle.addEventListener("click", toggleReview);
+}
+
+render();
+</script>
+</body>
+</html>
